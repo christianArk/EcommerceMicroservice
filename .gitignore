@@ -1,0 +1,4 @@
+./CustomerService/node_modules
+./OrderService/node_modules
+./PaymentService/node_modules
+./ProductService/node_modules
