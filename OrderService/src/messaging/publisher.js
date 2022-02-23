@@ -1,9 +1,9 @@
 var amqp = require('amqplib/callback_api');
 
-const rabbitURL = 'amqp://guest:guest@localhost:5672'
+const {RABBIT_URI} = process.env
 
 export const publishOrderCreated = (newOrder) => {
-    amqp.connect(rabbitURL, (err, connection) => {
+    amqp.connect(RABBIT_URI, (err, connection) => {
         if (err) {
             throw err
         }

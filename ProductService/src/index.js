@@ -12,14 +12,18 @@ mongoose.Promise =  global.Promise
 mongoose.connect(DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-})
+}).then(() => {
+    console.log('ProductService db connected')
+}).catch(err => console.log(err.message))
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
 app.use("/api", routes)
 
-app.get('/', (req, res) => { res.send("<ChetaJS/>, start building something we'd remember!")});
+app.get('/', (req, res) => { res.send("Product Service")});
+
+app.listen(PORT, () => { console.log(`Product service is running on port ${PORT}`)});
 
 process.on('uncaughtException', (error, origin) => {
     console.log('----- Uncaught exception -----')
@@ -30,5 +34,3 @@ process.on('unhandledRejection', (error, promise) => {
     console.log('----- Unhandled Rejection -----')
     console.log(error)
 })
-
-app.listen(PORT, () => { console.log(`Your app is running on port ${PORT}`)});

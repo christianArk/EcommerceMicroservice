@@ -1,0 +1,98 @@
+version: '3.4'
+
+services:
+  mongodatabase:
+    container_name: mongodatabase
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+
+
+  customerservice.api:
+    command: npm start
+    build: ./CustomerService
+    environment:
+      PORT: 4001
+      DB_URI: mongodb://mongodatabase:27017/customerServiceDB
+    depends_on:
+      mongodatabase:
+        condition: service_started
+    ports:
+      - 4001:4001
+    links:
+      - mongodatabase
+
+  
+  paymentservice.api:
+    command: npm start
+    build: ./PaymentService
+    environment:
+      PORT: 4002
+      DB_URI: mongodb://mongodatabase:27017/paymentServiceDB
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      mongodatabase:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - 4002:4002
+    links:
+      - mongodatabase
+      - rabbitmq
+
+  
+  orderservice.api:
+    command: npm start
+    build: ./OrderService
+    environment:
+      PORT: 4003
+      DB_URI: mongodb://mongodatabase:27017/orderServiceDB
+      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      mongodatabase:
+        condition: service_started
+      rabbitmq:
+          condition: service_healthy
+    ports:
+      - 4003:4003
+    links:
+      - mongodatabase
+      - rabbitmq
+
+
+  productservice.api:
+    command: npm start
+    build: ./ProductService
+    environment:
+      PORT: 4004
+      DB_URI: mongodb://mongodatabase:27017/productServiceDB
+    depends_on:
+      mongodatabase:
+        condition: service_started
+    ports:
+      - 4004:4004
+
+volumes:
+  mongo_data:

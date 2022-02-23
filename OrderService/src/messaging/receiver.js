@@ -2,11 +2,11 @@ import { OrderService } from "../services/orderService";
 
 var amqp = require('amqplib/callback_api');
 
-const rabbitURL = 'amqp://guest:guest@localhost:5672'
+const {RABBIT_URI} = process.env
 
 // listen for payment status
 export const listenForPaymentStatus = () => {
-    amqp.connect(rabbitURL, (err, connection) => {
+    amqp.connect(RABBIT_URI, (err, connection) => {
         if (err) {
             throw err
         }
@@ -17,6 +17,10 @@ export const listenForPaymentStatus = () => {
             }
     
             let exchange = "paymentTransaction"
+
+            channel.assertExchange(exchange, 'fanout', {
+                durable: false
+            });
     
             channel.assertQueue('', {
                 exclusive: true
