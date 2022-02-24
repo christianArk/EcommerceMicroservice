@@ -22,6 +22,13 @@ This repository contains the implementation of an ecommerce microservice. It inc
 
 ![Basic Architecture diagram](https://res.cloudinary.com/dpyywotyh/image/upload/v1645660311/EcommerceArchitecture_omepg6.png)
 
+
+## Requirements
+
+ - Visual Studio Code or Any code editor
+ - Docker Desktop
+ 
+
 ## Installation
 
  1. Clone the repository
