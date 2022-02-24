@@ -16,11 +16,6 @@ export class TransactionHistoryModel extends Schema {
                 type: String,
                 required: true
             },
-            products: [
-                {
-                   productID: String 
-                }
-            ],
             amount: {
                 type: String,
                 required: true
