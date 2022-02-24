@@ -53,5 +53,13 @@ export class CustomerService {
             throw error;
         }
     }
+
+    getCustomerByEmail = async (email) => {
+        try {
+            return await customerModel.findOne({email: email});
+        } catch (error) {
+            throw error;
+        }
+    }
     
 }

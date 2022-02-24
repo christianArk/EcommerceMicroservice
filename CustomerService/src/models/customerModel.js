@@ -20,7 +20,7 @@ export class CustomerModel extends Schema {
                 type: String,
                 required: true
             },
-            PhoneNumber: {
+            phoneNumber: {
                 type: String
             },
             createdAt: {
