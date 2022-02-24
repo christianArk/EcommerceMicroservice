@@ -6,15 +6,15 @@ services:
     image: mongo:latest
     restart: always
     ports:
-      - 27017:27017
+      - 27018:27017
     volumes:
       - mongo_data:/data/db
 
 
-  rabbitmq:
+  rabbitmqbroker:
     image: rabbitmq:3-management-alpine
-    hostname: rabbitmq
-    container_name: rabbitmq
+    hostname: rabbitmqbroker
+    container_name: rabbitmqbroker
     restart: always
     healthcheck:
       test: rabbitmq-diagnostics -q ping
@@ -22,8 +22,8 @@ services:
       timeout: 10s
       retries: 3
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 5673:5672
+      - 15673:15672
     volumes:
         - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
         - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
@@ -51,17 +51,17 @@ services:
     environment:
       PORT: 4002
       DB_URI: mongodb://mongodatabase:27017/paymentServiceDB
-      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      RABBIT_URI: amqp://guest:guest@rabbitmqbroker:5672
     depends_on:
       mongodatabase:
         condition: service_started
-      rabbitmq:
+      rabbitmqbroker:
         condition: service_healthy
     ports:
       - 4002:4002
     links:
       - mongodatabase
-      - rabbitmq
+      - rabbitmqbroker
 
   
   orderservice.api:
@@ -71,17 +71,17 @@ services:
     environment:
       PORT: 4003
       DB_URI: mongodb://mongodatabase:27017/orderServiceDB
-      RABBIT_URI: amqp://guest:guest@rabbitmq:5672
+      RABBIT_URI: amqp://guest:guest@rabbitmqbroker:5672
     depends_on:
       mongodatabase:
         condition: service_started
-      rabbitmq:
+      rabbitmqbroker:
           condition: service_healthy
     ports:
       - 4003:4003
     links:
       - mongodatabase
-      - rabbitmq
+      - rabbitmqbroker
 
 
   productservice.api:
