@@ -33,12 +33,12 @@ docker-compose up
 4. You can lauch the services with the urls below:
 
 
-- Customer Service [http://localhost:4001/api/customer](http://localhost:4001/api/customer)
+- Customer Service [http://localhost:4001/api-docs](http://localhost:4001/api-docs)
+
+- Product Service [http://localhost:4004/api-docs](http://localhost:4004/api-docs)
+
+- Order Service [http://localhost:4003/api-docs](http://localhost:4003/api-docs)
 		
-- Product Service [http://localhost:4004/api/product](http://localhost:4004/api/product)
-		
-- Order Service [http://localhost:4003/api/order](http://localhost:4003/api/order)
-		
-- Payment Service [http://localhost:4002/api/payment](http://localhost:4002/api/payment)
+- Payment Service [http://localhost:4002/api-docs](http://localhost:4002/api-docs)
 		
 - RabbitMQ UI [http://localhost:15672/](http://localhost:15672/)

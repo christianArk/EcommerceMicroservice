@@ -2,12 +2,15 @@ import express from "express";
 import bodyParser from "body-parser";
 import routes from "./routes";
 import mongoose from "mongoose";
+import swaggerJsdoc from "swagger-jsdoc"
+import swaggerUi from "swagger-ui-express"
 import 'dotenv/config'
 
 import { listenForPaymentStatus } from "./messaging/receiver";
 
 const {PORT, DB_URI} = process.env
 const app = express();
+
 
 // db connection
 try {
@@ -22,12 +25,29 @@ try {
     console.log('order service db error ===>', error)
 }
 
+// Swagger Documentation
+const swaggerOptions = {
+    definition: {
+        info: {
+            title: "Order Service",
+            version: "1.0.0",
+            contact: {
+                name: "Onyeneke Christian",
+                email: "onyenekechristian@gmail.com"
+            }
+        }
+    },
+    apis: [`${__dirname}/routes/*.js`]
+}
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+
 // listen for payment status
 listenForPaymentStatus()
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 app.use("/api", routes)
 
 app.get('/', (req, res) => { res.send("Order Service")});

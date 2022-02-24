@@ -9,6 +9,17 @@ const transactionHistoryCtrl = new TransactionHistoryController(TransactionHisto
 
 
 router.route('/')
+/**
+ * @swagger
+ * /api/transactionHistory:
+ *  get:
+ *    tags:
+ *      - Transactions
+ *    description: Get a list of transaction histories
+ *    responses:
+ *      '200':
+ *        description: A successful response
+ */
         .get(transactionHistoryCtrl.getAllTransactionHistorys)
         .post(transactionHistoryCtrl.createTransactionHistory)
         .put(transactionHistoryCtrl.updateTransactionHistory)

@@ -33,7 +33,7 @@ export class TransactionHistoryController
     getAllTransactionHistorys = async (req, res) => {
         try {
             await this.transactionHistoryService.getAllTransactionHistorys().then(data => {
-                res.json(new Response("All Transaction Historys", data));
+                res.json(new Response("All Transaction Histories", data));
             }).catch(err => {
                 res.status(400).json(new Response("An error occured!", err, false));
             })
