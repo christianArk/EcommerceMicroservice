@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import routes from "./routes";
 import mongoose from "mongoose";
 import 'dotenv/config'
+import { seedProducts } from "./models/seeder";
 
 const {PORT, DB_URI} = process.env
 const app = express();
@@ -15,6 +16,8 @@ mongoose.connect(DB_URI, {
 }).then(() => {
     console.log('ProductService db connected')
 }).catch(err => console.log(err.message))
+
+seedProducts()
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())

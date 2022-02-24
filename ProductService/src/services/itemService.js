@@ -6,6 +6,15 @@ const itemModel = mongoose.model('Item', new ItemModel);
 export class ItemService {
     constructor(){
     }
+
+    insertMany = async (data) => {
+        try {
+            return itemModel.insertMany(data)
+        } catch (error) {
+            throw error;
+        }
+    }
+
     
     createItem = async (data) => {
         try {
