@@ -31,10 +31,12 @@ This repository contains the implementation of an ecommerce microservice. It inc
 
 ## Installation
 
+*Note: Confirm that the ports (in the docker-compose.yml file) are not already allocated and that there are no existing container names with that of the docker-compose.yml file on your system.*
+
  1. Clone the repository
  2. At the root of the directory which includes the docker-compose.yml file, run the command below:
 ```
-docker-compose up
+docker-compose up --build
 ```
 3. Wait for docker to compose all services. You can watch the docker desktop to ensure all services are running. Services like the Order service and Payment service depends on rabbitMQ so will auto retry connection to rabbit until rabbit is running.
 4. You can launch the services with the urls below:
@@ -48,4 +50,4 @@ docker-compose up
 		
 - Payment Service [http://localhost:4002/api-docs](http://localhost:4002/api-docs)
 		
-- RabbitMQ UI [http://localhost:15672/](http://localhost:15672/)
+- RabbitMQ UI [http://localhost:15673/](http://localhost:15673/)
