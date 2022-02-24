@@ -10,7 +10,8 @@ const {RABBIT_URI} = process.env
 export const listenForOrder = () => {
     amqp.connect(RABBIT_URI, (err, connection) => {
         if (err) {
-            throw err
+            console.log("retrying connection...")
+            return setTimeout(listenForOrder, 5000);
         }
     
         connection.createChannel((err1, channel) => {
@@ -65,7 +66,8 @@ export const listenForOrder = () => {
 export const listenForTransaction = () => {
     amqp.connect(RABBIT_URI, (err, connection) => {
         if (err) {
-            throw err
+            console.log("retrying connection...")
+            return setTimeout(listenForTransaction, 5000);
         }
     
         connection.createChannel((err1, channel) => {

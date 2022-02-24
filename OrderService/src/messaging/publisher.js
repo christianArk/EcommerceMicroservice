@@ -2,39 +2,91 @@ var amqp = require('amqplib/callback_api');
 
 const {RABBIT_URI} = process.env
 
-export const publishOrderCreated = (newOrder) => {
+var rabbitConn = null
+var publishChannel = null
+var offlinePubQueue = [];
+
+export const startPublisher = () => {
     amqp.connect(RABBIT_URI, (err, connection) => {
         if (err) {
-            throw err
+          return setTimeout(startPublisher, 5000);
         }
+        connection.on("error", (err) => {
+          if (err.message !== "Connection closing") {
+            console.error("[AMQP] connection error", err.message);
+          }
+        });
+        connection.on("close", () => {
+          console.error("[AMQP] reconnecting");
+          return setTimeout(startPublisher, 5000);
+        });
+    
+        console.log("[AMQP] connected");
+        rabbitConn = connection;
+    
+        connectionSuccessful();
+      });
+}
 
-        connection.createChannel((err1, channel) => {
-            if (err1) {
-                throw err1
+const connectionSuccessful = () => {
+    rabbitConn.createConfirmChannel((err, channel) => {
+      if (closeOnErr(err)) return;
+      channel.on("error", (err) => {
+        console.error("[AMQP] channel error", err.message);
+      });
+      channel.on("close", () => {
+        console.log("[AMQP] channel closed");
+      });
+  
+      publishChannel = channel;
+    //   while (true) {
+    //     var data = offlinePubQueue.shift();
+    //     if (!data) break;
+    //     const [exchange, key, content] = data
+    //     publish(exchange, key, content);
+    //   }
+    });
+}
+
+const publish = (exchange, routingKey, content) => {
+    try {
+        publishChannel.assertExchange(exchange, 'direct', {
+            durable: false
+        });
+
+        publishChannel.publish(exchange, routingKey, Buffer.from(content), { persistent: true },
+            (err, ok) => {
+            if (err) {
+                console.error("[AMQP] publish error", err);
+                offlinePubQueue.push([exchange, routingKey, content]);
+                publishChannel.connection.close();
             }
+            console.log("[x] sent %s", content)
+        });
+        
+    } catch (e) {
+        console.error("[AMQP] publish error", e.message);
+        offlinePubQueue.push([exchange, routingKey, content]);
+    }
+}
 
-            const exchange = "orderCreated"
-            const key = "newOrder"
+const closeOnErr = (err) => {
+    if (!err) return false;
+    console.error("[AMQP] error", err);
+    rabbitConn.close();
+    return true;
+}
 
-            const payload = {
-                orderID: newOrder._id,
-                customerID: newOrder.customerID,
-                amount: newOrder.totalAmount
-            }
+export const publishOrderCreated = (newOrder) => {
+    const exchange = "orderCreated"
+    const key = "newOrder"
 
-            let message = JSON.stringify(payload)
+    const payload = {
+        orderID: newOrder._id,
+        customerID: newOrder.customerID,
+        amount: newOrder.totalAmount
+    }
 
-            channel.assertExchange(exchange, 'direct', {
-                durable: false
-            });
-
-            channel.publish(exchange, key, Buffer.from(message))
-            console.log("[x] sent %s", message)
-
-        })
-
-        setTimeout(() => {
-            connection.close();
-        }, 500)
-    })
+    let message = JSON.stringify(payload)
+    publish(exchange, key, message)
 }

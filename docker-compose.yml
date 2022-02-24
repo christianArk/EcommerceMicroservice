@@ -17,7 +17,7 @@ services:
     container_name: rabbitmq
     restart: always
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      test: rabbitmq-diagnostics -q ping
       interval: 5s
       timeout: 10s
       retries: 3
@@ -47,6 +47,7 @@ services:
   paymentservice.api:
     command: npm start
     build: ./PaymentService
+    restart: on-failure
     environment:
       PORT: 4002
       DB_URI: mongodb://mongodatabase:27017/paymentServiceDB
@@ -66,6 +67,7 @@ services:
   orderservice.api:
     command: npm start
     build: ./OrderService
+    restart: on-failure
     environment:
       PORT: 4003
       DB_URI: mongodb://mongodatabase:27017/orderServiceDB

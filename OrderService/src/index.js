@@ -7,6 +7,7 @@ import swaggerUi from "swagger-ui-express"
 import 'dotenv/config'
 
 import { listenForPaymentStatus } from "./messaging/receiver";
+import { startPublisher } from "./messaging/publisher";
 
 const {PORT, DB_URI} = process.env
 const app = express();
@@ -40,6 +41,9 @@ const swaggerOptions = {
     apis: [`${__dirname}/routes/*.js`]
 }
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
+
+// startPublisher
+startPublisher()
 
 // listen for payment status
 listenForPaymentStatus()

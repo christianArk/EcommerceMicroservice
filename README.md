@@ -29,7 +29,7 @@ This repository contains the implementation of an ecommerce microservice. It inc
 ```
 docker-compose up
 ```
-3. Wait for docker to compose all services. Watch the docker desktop and ensure all services are running. Services like the Order service and Payment service depends on rabbitMQ so might take a bit longer before running.
+3. Wait for docker to compose all services. Watch the docker desktop and ensure all services are running. Services like the Order service and Payment service depends on rabbitMQ so will auto retry connection to rabbit until rabbit is running.
 4. You can lauch the services with the urls below:
 
 
