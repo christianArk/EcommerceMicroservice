@@ -18,32 +18,42 @@ export const listenForOrder = () => {
                 throw err1
             }
     
-            let queue = "order"
-    
-            channel.assertQueue(queue, {
+            let exchange = "orderCreated"
+            let key = "newOrder"
+
+            channel.assertExchange(exchange, 'direct', {
                 durable: false
-            })
-    
-            console.log("waiting for messages in %s", queue)
-            
-            channel.consume(queue, async (message) => {
-                let msg = JSON.parse(message.content.toString())
-                console.log("[x] Received %s", msg)
+            });
 
-                // call payment service
-                let paymentService = new PaymentService()
-                let status = await paymentService.makePayment()
-
-                let transaction = {
-                    status,
-                    ...msg
+            channel.assertQueue('', {
+                exclusive: true
+            }, (err, q) => {
+                if (err){
+                    throw err
                 }
-    
-                // publish for transaction history
-                publishTransaction(transaction)
-    
-            }, {
-                noAck: true
+
+                console.log("waiting for new order from %s", exchange)
+                channel.bindQueue(q.queue, exchange, key)
+
+                channel.consume(q.queue, async (message) => {
+                    let msg = JSON.parse(message.content.toString())
+                    
+                    // call payment service
+                    let paymentService = new PaymentService()
+                    let status = await paymentService.makePayment()
+
+                    let transaction = {
+                        status,
+                        ...msg
+                    }
+        
+                    // publish for transaction history
+                    publishTransaction(transaction)
+        
+                }, {
+                    noAck: true
+                })
+
             })
         })
         

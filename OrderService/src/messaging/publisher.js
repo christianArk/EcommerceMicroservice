@@ -13,7 +13,8 @@ export const publishOrderCreated = (newOrder) => {
                 throw err1
             }
 
-            const queue = "order"
+            const exchange = "orderCreated"
+            const key = "newOrder"
 
             const payload = {
                 orderID: newOrder._id,
@@ -23,12 +24,13 @@ export const publishOrderCreated = (newOrder) => {
 
             let message = JSON.stringify(payload)
 
-            channel.assertQueue(queue, {
+            channel.assertExchange(exchange, 'direct', {
                 durable: false
-            })
+            });
 
-            channel.sendToQueue(queue, Buffer.from(message))
+            channel.publish(exchange, key, Buffer.from(message))
             console.log("[x] sent %s", message)
+
         })
 
         setTimeout(() => {

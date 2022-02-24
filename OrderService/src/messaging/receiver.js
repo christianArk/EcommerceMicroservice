@@ -34,7 +34,7 @@ export const listenForPaymentStatus = () => {
                 channel.consume(q.queue, (message) => {
                     let msg = JSON.parse(message.content.toString())
     
-                    console.log('received!')
+                    console.log('Received payment status!')
                     
                     // call transaction service to save transaction history
                     let orderService = new OrderService()
